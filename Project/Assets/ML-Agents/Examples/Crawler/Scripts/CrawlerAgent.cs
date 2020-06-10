@@ -70,6 +70,27 @@ public class CrawlerAgent : Agent
     }
 
     /// <summary>
+    /// Loop over body parts and reset them to initial conditions.
+    /// </summary>
+    public override void OnEpisodeBegin()
+    {
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            bodyPart.Reset(bodyPart);
+        }
+
+        //Random start rotation to help generalize
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+
+        UpdateOrientationCube();
+
+//        if (detectTargets && respawnTargetWhenTouched)
+//        {
+//            GetRandomTargetPos();
+//        }
+    }
+    
+    /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
@@ -254,26 +275,7 @@ public class CrawlerAgent : Agent
         AddReward(-0.001f);
     }
 
-    /// <summary>
-    /// Loop over body parts and reset them to initial conditions.
-    /// </summary>
-    public override void OnEpisodeBegin()
-    {
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
 
-        //Random start rotation to help generalize
-        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-
-        UpdateOrientationCube();
-
-        if (detectTargets && respawnTargetWhenTouched)
-        {
-            GetRandomTargetPos();
-        }
-    }
 
     private void OnDrawGizmosSelected()
     {
