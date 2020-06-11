@@ -27,7 +27,7 @@ public class CrawlerAgent : Agent
     [Header("Orientation")] [Space(10)]
     //This will be used as a stable reference point for observations
     //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
-    public GameObject orientationCube;
+    public OrientationCubeController orientationCube;
 
     JointDriveController m_JdController;
 
@@ -48,7 +48,7 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-        UpdateOrientationCube();
+        orientationCube.UpdateOrientation(body, targetController.transform);
 
         m_JdController = GetComponent<JointDriveController>();
 
@@ -77,7 +77,7 @@ public class CrawlerAgent : Agent
         //Random start rotation to help generalize
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
-        UpdateOrientationCube();
+        orientationCube.UpdateOrientation(body, targetController.transform);
     }
     
     /// <summary>
@@ -119,7 +119,7 @@ public class CrawlerAgent : Agent
             sensor.AddObservation(hit.distance / maxRaycastDist);
         }
         else
-            sensor.AddObservation(maxRaycastDist);
+            sensor.AddObservation(1);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -162,22 +162,10 @@ public class CrawlerAgent : Agent
         bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
         bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
     }
-
-    void UpdateOrientationCube()
-    {
-        //FACING DIR
-        m_WalkDir = targetController.transform.position - orientationCube.transform.position;
-        m_WalkDir.y = 0; //flatten dir on the y
-        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
-
-        //UPDATE ORIENTATION CUBE POS & ROT
-        orientationCube.transform.position = body.position;
-        orientationCube.transform.rotation = m_WalkDirLookRot;
-    }
-
+    
     void FixedUpdate()
     {
-        UpdateOrientationCube();
+        orientationCube.UpdateOrientation(body, targetController.transform);
         
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function

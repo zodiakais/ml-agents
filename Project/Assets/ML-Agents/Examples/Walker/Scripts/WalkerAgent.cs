@@ -34,7 +34,7 @@ public class WalkerAgent : Agent
     [Header("Orientation")] [Space(10)]
     //This will be used as a stable reference point for observations
     //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
-    public GameObject orientationCube;
+    public OrientationCubeController orientationCube;
 
     JointDriveController m_JdController;
 
@@ -43,7 +43,7 @@ public class WalkerAgent : Agent
     public override void Initialize()
     {
 
-        UpdateOrientationCube();
+        orientationCube.UpdateOrientation(hips, targetController.transform);
 
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
@@ -68,6 +68,25 @@ public class WalkerAgent : Agent
         SetResetParameters();
     }
 
+    /// <summary>
+    /// Loop over body parts and reset them to initial conditions.
+    /// </summary>
+    public override void OnEpisodeBegin()
+    {
+        //Reset all of the body parts
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            bodyPart.Reset(bodyPart);
+        }
+
+        //Random start rotation to help generalize
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+
+        orientationCube.UpdateOrientation(hips, targetController.transform);
+
+        SetResetParameters();
+    }
+    
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -144,21 +163,10 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
-    void UpdateOrientationCube()
-    {
-        //FACING DIR
-        m_WalkDir = targetController.transform.position - orientationCube.transform.position;
-        m_WalkDir.y = 0; //flatten dir on the y
-        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
-
-        //UPDATE ORIENTATION CUBE POS & ROT
-        orientationCube.transform.position = hips.position;
-        orientationCube.transform.rotation = m_WalkDirLookRot;
-    }
 
     void FixedUpdate()
     {
-        UpdateOrientationCube();
+        orientationCube.UpdateOrientation(hips, targetController.transform);
 
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
@@ -183,25 +191,6 @@ public class WalkerAgent : Agent
         AddReward(1f);
     }
 
-    /// <summary>
-    /// Loop over body parts and reset them to initial conditions.
-    /// </summary>
-    public override void OnEpisodeBegin()
-    {
-        //Reset all of the body parts
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
-
-        //Random start rotation to help generalize
-        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-
-        UpdateOrientationCube();
-
-        SetResetParameters();
-    }
-
     public void SetTorsoMass()
     {
         m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
@@ -213,5 +202,4 @@ public class WalkerAgent : Agent
     {
         SetTorsoMass();
     }
-
 }
