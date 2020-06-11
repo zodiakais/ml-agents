@@ -11,12 +11,7 @@ public class CrawlerAgent : Agent
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
     [Header("Target To Walk Towards")] [Space(10)]
-    public Transform target; //Target the agent will walk towards.
-    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
-    public bool detectTargets; //Should this agent detect targets
-    public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
-
-    public Transform ground; //Ground gameobject. The height will be used for target spawning
+    public TargetController targetController;
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -83,11 +78,6 @@ public class CrawlerAgent : Agent
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationCube();
-
-//        if (detectTargets && respawnTargetWhenTouched)
-//        {
-//            GetRandomTargetPos();
-//        }
     }
     
     /// <summary>
@@ -120,7 +110,7 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
+        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(targetController.transform.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -143,21 +133,8 @@ public class CrawlerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        if (respawnTargetWhenTouched)
-        {
-            GetRandomTargetPos();
-        }
     }
 
-    /// <summary>
-    /// Moves target to a random position within specified radius.
-    /// </summary>
-    public void GetRandomTargetPos()
-    {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
-    }
 
     public override void OnActionReceived(float[] vectorAction)
     {
@@ -189,7 +166,7 @@ public class CrawlerAgent : Agent
     void UpdateOrientationCube()
     {
         //FACING DIR
-        m_WalkDir = target.position - orientationCube.transform.position;
+        m_WalkDir = targetController.transform.position - orientationCube.transform.position;
         m_WalkDir.y = 0; //flatten dir on the y
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
 
@@ -200,19 +177,8 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        if (detectTargets)
-        {
-            foreach (var bodyPart in m_JdController.bodyPartsList)
-            {
-                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
-                {
-                    TouchedTarget();
-                }
-            }
-
-            UpdateOrientationCube();
-        }
-
+        UpdateOrientationCube();
+        
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
         if (useFootGroundedVisualization)
@@ -275,16 +241,4 @@ public class CrawlerAgent : Agent
         AddReward(-0.001f);
     }
 
-
-
-    private void OnDrawGizmosSelected()
-    {
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.matrix = orientationCube.transform.localToWorldMatrix;
-            Gizmos.DrawWireCube(Vector3.zero, orientationCube.transform.localScale);
-            Gizmos.DrawRay(Vector3.zero, Vector3.forward);
-        }
-    }
 }

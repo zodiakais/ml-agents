@@ -12,12 +12,7 @@ public class WalkerAgent : Agent
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
     
     [Header("Target To Walk Towards")] [Space(10)]
-    public Transform target; //Target the agent will walk towards.
-    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
-    public bool detectTargets; //Should this agent detect targets
-    public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
-
-    public Transform ground; //Ground gameobject. The height will be used for target spawning
+    public TargetController targetController;
 
     [Header("Body Parts")] [Space(10)] public Transform hips;
     public Transform chest;
@@ -104,7 +99,7 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
 
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
+        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(targetController.transform.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -152,7 +147,7 @@ public class WalkerAgent : Agent
     void UpdateOrientationCube()
     {
         //FACING DIR
-        m_WalkDir = target.position - orientationCube.transform.position;
+        m_WalkDir = targetController.transform.position - orientationCube.transform.position;
         m_WalkDir.y = 0; //flatten dir on the y
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
 
@@ -163,17 +158,6 @@ public class WalkerAgent : Agent
 
     void FixedUpdate()
     {
-        if (detectTargets)
-        {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-            {
-                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
-                {
-                    TouchedTarget();
-                }
-            }
-        }
-
         UpdateOrientationCube();
 
         // Set reward for this step according to mixture of the following elements.
@@ -197,20 +181,6 @@ public class WalkerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        if (respawnTargetWhenTouched)
-        {
-            MoveTargetToRandomPosition();
-        }
-    }
-
-    /// <summary>
-    /// Moves target to a random position within specified radius.
-    /// </summary>
-    public void MoveTargetToRandomPosition()
-    {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
     }
 
     /// <summary>
@@ -229,11 +199,6 @@ public class WalkerAgent : Agent
 
         UpdateOrientationCube();
 
-        if (detectTargets && respawnTargetWhenTouched)
-        {
-            MoveTargetToRandomPosition();
-        }
-
         SetResetParameters();
     }
 
@@ -249,14 +214,4 @@ public class WalkerAgent : Agent
         SetTorsoMass();
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.matrix = orientationCube.transform.localToWorldMatrix;
-            Gizmos.DrawWireCube(Vector3.zero, orientationCube.transform.localScale);
-            Gizmos.DrawRay(Vector3.zero, Vector3.forward);
-        }
-    }
 }
