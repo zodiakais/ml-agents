@@ -64,7 +64,7 @@ public class WormAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             bodyPart.Reset(bodyPart);
         }
@@ -87,11 +87,11 @@ public class WormAgent : Agent
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
-        //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
 
         if (bp.rb.transform != bodySegment0)
         {
+            //Get position relative to hips in the context of our orientation cube's space
+            sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
             sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
@@ -108,16 +108,17 @@ public class WormAgent : Agent
         else
             sensor.AddObservation(1);
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            CollectObservationBodyPart(bodyPart, sensor);
-        }
-
         sensor.AddObservation(bodySegment0.rotation);
         sensor.AddObservation(orientationCube.transform.rotation);
         
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
+        
+        foreach (var bodyPart in m_JdController.bodyPartsList)
+        {
+            CollectObservationBodyPart(bodyPart, sensor);
+        }
+
     }
 
     /// <summary>
