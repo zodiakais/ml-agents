@@ -1390,7 +1390,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3215485071343014658}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d2b3caecf069467ebf3a650d8ee401e, type: 3}
   m_Name: 
@@ -1593,7 +1593,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.26999986, y: 0.10099995, z: 0.598}
+  m_ConnectedAnchor: {x: -0.27000427, y: 0.10099995, z: 0.598}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -1875,7 +1875,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.26999986, y: 0.10099998, z: 0.598}
+  m_ConnectedAnchor: {x: -0.2699984, y: 0.10099998, z: 0.598}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -2847,7 +2847,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.289, y: 0.040000036, z: 0.648}
+  m_ConnectedAnchor: {x: 0.28900146, y: 0.040000036, z: 0.648}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -5137,7 +5137,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.289, y: 0.04000008, z: 0.648}
+  m_ConnectedAnchor: {x: 0.28900146, y: 0.04000008, z: 0.648}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -6149,6 +6149,16 @@ PrefabInstance:
       propertyPath: ground
       value: 
       objectReference: {fileID: 7519759559437056804}
+    - target: {fileID: 6060305997219920622, guid: 3ebcde4cf2d5c4c029e2a5ce3d853aba,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.x
+      value: 0.28900146
+      objectReference: {fileID: 0}
+    - target: {fileID: 6060305998100557857, guid: 3ebcde4cf2d5c4c029e2a5ce3d853aba,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.x
+      value: -0.2699984
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ebcde4cf2d5c4c029e2a5ce3d853aba, type: 3}
 --- !u!1001 &1318008103428203000
@@ -6550,7 +6560,7 @@ PrefabInstance:
     - target: {fileID: 839922442615925678, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 839922442615925678, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
@@ -6605,7 +6615,7 @@ PrefabInstance:
     - target: {fileID: 845566399918322646, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
       propertyPath: m_Name
-      value: PlatformWormDynamicTarget
+      value: PlatformWormDynamicTarget (2)
       objectReference: {fileID: 0}
     - target: {fileID: 845742365997159796, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
