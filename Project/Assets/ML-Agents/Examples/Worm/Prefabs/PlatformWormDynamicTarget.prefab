@@ -6615,7 +6615,7 @@ PrefabInstance:
     - target: {fileID: 845566399918322646, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
       propertyPath: m_Name
-      value: PlatformWormDynamicTarget (2)
+      value: PlatformWormDynamicTarget
       objectReference: {fileID: 0}
     - target: {fileID: 845742365997159796, guid: d6fc96a99a9754f07b48abf1e0d55a5c,
         type: 3}
