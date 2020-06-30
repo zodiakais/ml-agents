@@ -109,8 +109,9 @@ public class WormAgent : Agent
         else
             sensor.AddObservation(1);
 
-        sensor.AddObservation(bodySegment0.rotation);
-        sensor.AddObservation(orientationCube.transform.rotation);
+//        sensor.AddObservation(bodySegment0.rotation);
+//        sensor.AddObservation(orientationCube.transform.rotation);
+        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, orientationCube.transform.forward));
         
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
